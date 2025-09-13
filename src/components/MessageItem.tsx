@@ -56,14 +56,17 @@ export function MessageItem({
   return (
     <div className="group space-y-2">
       {/* Main message */}
-      <div className="flex items-start gap-3 hover:bg-muted/30 p-2 rounded-lg">
-        <Avatar className="w-8 h-8 shrink-0">
-          <AvatarImage src={avatarUrl || undefined} />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
+      <div className={isOwn ? "flex items-end gap-3 p-2 rounded-lg justify-end" : "flex items-start gap-3 p-2 rounded-lg justify-start"}>
+        {/* Left avatar for others, right avatar for me */}
+        {!isOwn && (
+          <Avatar className="w-8 h-8 shrink-0">
+            <AvatarImage src={avatarUrl || undefined} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        )}
 
-        <div className="flex-1 space-y-1">
-          <div className="flex items-center gap-2">
+        <div className={isOwn ? "max-w-[70%] text-right" : "max-w-[70%]"}>
+          <div className={isOwn ? "flex items-center justify-end gap-2" : "flex items-center gap-2"}>
             <span className="font-medium text-sm">{displayName}</span>
             <span className="text-xs text-muted-foreground">{timestamp}</span>
           </div>
@@ -80,7 +83,7 @@ export function MessageItem({
                 }}
                 autoFocus
               />
-              <div className="flex items-center gap-2">
+              <div className={isOwn ? "flex items-center gap-2 justify-end" : "flex items-center gap-2"}>
                 <Button size="sm" variant="ghost" onClick={handleSaveEdit}>
                   <Check className="w-3 h-3" />
                 </Button>
@@ -91,10 +94,11 @@ export function MessageItem({
             </div>
           ) : (
             <>
-              <div className="text-sm">{message.text}</div>
-              
+              <div className={isOwn ? "message-bubble mine ml-auto" : "message-bubble theirs"}>
+                <div className="text-sm whitespace-pre-wrap">{message.text}</div>
+              </div>
               {/* Message actions */}
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className={isOwn ? "flex items-center gap-1 opacity-0 group-hover:opacity-100 justify-end" : "flex items-center gap-1 opacity-0 group-hover:opacity-100"}>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -127,6 +131,13 @@ export function MessageItem({
             </>
           )}
         </div>
+
+        {isOwn && (
+          <Avatar className="w-8 h-8 shrink-0">
+            <AvatarImage src={avatarUrl || undefined} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        )}
       </div>
 
       {/* Thread replies */}

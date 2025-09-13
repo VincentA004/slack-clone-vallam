@@ -120,7 +120,7 @@ export function AppSidebar({
   };
 
   return (
-    <Sidebar collapsible="icon" className={collapsed ? "w-14" : "w-80"}>
+    <Sidebar collapsible="icon" variant="inset" className={collapsed ? "w-14" : "w-80"}>
       <SidebarHeader className="p-4">
         {!collapsed && (
           <div className="flex items-center gap-2">
