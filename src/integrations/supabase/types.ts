@@ -212,6 +212,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ensure_user_in_default_channels: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       is_member_of_channel: {
         Args: { _channel_id: string }
         Returns: boolean
