@@ -5,98 +5,96 @@
 
 @layer base {
   :root {
-    /* High contrast, friendly color system */
-    --background: 255 255 255;        /* Pure white background */
-    --foreground: 17 24 39;           /* Dark slate for high contrast text */
-    --card: 255 255 255;              /* White cards */
-    --card-foreground: 17 24 39;      /* Dark text on cards */
-    --popover: 255 255 255;
-    --popover-foreground: 17 24 39;
-    
-    /* Primary brand - friendly blue */
-    --primary: 37 99 235;             /* Bright, friendly blue */
-    --primary-foreground: 255 255 255;
-    
-    /* Secondary - light gray with good contrast */
-    --secondary: 241 245 249;         /* Light blue-gray */
-    --secondary-foreground: 30 41 59;  /* Dark slate blue */
-    
-    /* Muted areas */
-    --muted: 248 250 252;             /* Very light gray */
-    --muted-foreground: 71 85 105;    /* Medium gray for readable text */
-    
-    /* Accent colors */
-    --accent: 236 254 255;            /* Light cyan background */
-    --accent-foreground: 14 116 144;  /* Dark cyan text */
-    
-    /* Status colors with good contrast */
-    --destructive: 220 38 38;         /* Strong red */
-    --destructive-foreground: 255 255 255;
-    --success: 21 128 61;             /* Strong green */
-    --warning: 217 119 6;             /* Strong orange */
-    
+    /* High contrast, friendly color system (HSL values) */
+    --background: 0 0% 100%;            /* White */
+    --foreground: 222.2 47.4% 11.2%;    /* Slate-900 */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    /* Primary brand - accessible blue */
+    --primary: 217.2 91.2% 59.8%;       /* Blue-500 */
+    --primary-foreground: 210 40% 98%;  /* Almost white */
+
+    /* Secondary - subtle surface */
+    --secondary: 210 40% 96.1%;         /* Slate-100 */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Muted and text */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* Status */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142.1 70.6% 45.3%;       /* Green-500 */
+    --warning: 36.5 91.7% 50.2%;        /* Amber-500 */
+
     /* Borders and inputs */
-    --border: 226 232 240;            /* Light gray border */
-    --input: 241 245 249;             /* Light input background */
-    --ring: 59 130 246;               /* Blue focus ring */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217.2 91.2% 59.8%;
     --radius: 0.75rem;
-    
-    /* Sidebar with better contrast */
-    --sidebar-background: 248 250 252;
-    --sidebar-foreground: 30 41 59;
-    --sidebar-primary: 37 99 235;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 241 245 249;
-    --sidebar-accent-foreground: 30 41 59;
-    --sidebar-border: 226 232 240;
-    --sidebar-ring: 59 130 246;
+
+    /* Sidebar */
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
   
   .dark {
-    /* High contrast dark mode */
-    --background: 15 23 42;           /* Dark slate background */
-    --foreground: 248 250 252;        /* Light text */
-    --card: 30 41 59;                 /* Dark card background */
-    --card-foreground: 248 250 252;   /* Light text on cards */
-    --popover: 30 41 59;
-    --popover-foreground: 248 250 252;
-    
-    /* Primary - lighter blue for dark mode */
-    --primary: 96 165 250;            /* Light blue */
-    --primary-foreground: 15 23 42;   /* Dark text on primary */
-    
-    /* Secondary */
-    --secondary: 51 65 85;            /* Dark blue-gray */
-    --secondary-foreground: 226 232 240;
-    
-    /* Muted */
-    --muted: 51 65 85;                /* Dark muted background */
-    --muted-foreground: 148 163 184;  /* Light muted text */
-    
-    /* Accent */
-    --accent: 22 78 99;               /* Dark cyan */
-    --accent-foreground: 186 230 253; /* Light cyan text */
-    
-    /* Status colors for dark mode */
-    --destructive: 248 113 113;       /* Light red */
-    --destructive-foreground: 15 23 42;
-    --success: 74 222 128;            /* Light green */
-    --warning: 251 191 36;            /* Light orange */
-    
-    /* Borders and inputs */
-    --border: 71 85 105;              /* Medium gray border */
-    --input: 51 65 85;                /* Dark input background */
-    --ring: 96 165 250;               /* Light blue focus ring */
-    
-    /* Dark sidebar */
-    --sidebar-background: 30 41 59;
-    --sidebar-foreground: 226 232 240;
-    --sidebar-primary: 96 165 250;
-    --sidebar-primary-foreground: 15 23 42;
-    --sidebar-accent: 51 65 85;
-    --sidebar-accent-foreground: 226 232 240;
-    --sidebar-border: 71 85 105;
-    --sidebar-ring: 96 165 250;
+    /* High contrast dark mode (HSL values) */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Brand */
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    /* Surfaces */
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Status */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142.1 70.6% 45.3%;
+    --warning: 36.5 91.7% 50.2%;
+
+    /* Borders & ring */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 217.2 91.2% 59.8%;
+
+    /* Sidebar */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
