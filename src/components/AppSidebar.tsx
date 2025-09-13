@@ -91,6 +91,10 @@ export function AppSidebar({
     }
   }, [selectedChannelId, user]);
 
+  useEffect(() => {
+    if (user) loadUnreadCounts();
+  }, [channels, dms, user]);
+
   const loadChannels = async () => {
     if (!user) return;
 
@@ -235,7 +239,7 @@ export function AppSidebar({
                     <Hash className="w-4 h-4" />
                     {!collapsed && <span>{channel.name}</span>}
                     {unreadCounts[channel.id] && (
-                      <div className="w-2 h-2 bg-red-500 rounded-full absolute -top-1 -right-1" />
+                      <span className="ml-auto w-2 h-2 rounded-full bg-destructive" />
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -274,7 +278,7 @@ export function AppSidebar({
                     <Users className="w-4 h-4" />
                     {!collapsed && <span>{getDMDisplayName(dm)}</span>}
                     {unreadCounts[dm.id] && (
-                      <div className="w-2 h-2 bg-red-500 rounded-full absolute -top-1 -right-1" />
+                      <span className="ml-auto w-2 h-2 rounded-full bg-destructive" />
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
