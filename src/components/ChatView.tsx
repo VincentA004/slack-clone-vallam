@@ -59,6 +59,17 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
   useEffect(() => {
     if (!channelId || !user) return;
 
+    const ensureMembership = async () => {
+      await supabase
+        .from('channel_members')
+        .upsert(
+          { channel_id: channelId, user_id: user.id, role: 'member' },
+          { onConflict: 'channel_id,user_id' }
+        );
+    };
+
+    ensureMembership();
+
     loadChannel();
     loadMessages();
     loadAgentTasks();
@@ -71,7 +82,7 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
         schema: 'public',
         table: 'messages',
         filter: `channel_id=eq.${channelId}`
-      }, (payload) => {
+      }, () => {
         loadMessages(); // Reload to get profile data
       })
       .on('postgres_changes', {
@@ -79,7 +90,7 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
         schema: 'public',
         table: 'messages',
         filter: `channel_id=eq.${channelId}`
-      }, (payload) => {
+      }, () => {
         loadMessages();
       })
       .on('postgres_changes', {
@@ -88,7 +99,7 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
         table: 'messages',
         filter: `channel_id=eq.${channelId}`
       }, (payload) => {
-        setMessages(prev => prev.filter(m => m.id !== payload.old.id));
+        setMessages(prev => prev.filter(m => m.id !== (payload as any).old.id));
       })
       .subscribe();
 

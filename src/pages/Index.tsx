@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
 import { ChatView } from '@/components/ChatView';
 import { NewChannelModal } from '@/components/NewChannelModal';
@@ -47,16 +47,15 @@ export default function Index() {
             onSettings={() => setShowSettingsModal(true)}
           />
           
-          <div className="flex-1 flex flex-col min-h-0">
+          <SidebarInset className="min-h-0 flex flex-col">
             <header className="h-12 flex items-center border-b bg-card px-4">
               <SidebarTrigger />
             </header>
-            
             <ChatView
               channelId={selectedChannelId}
               onSettingsOpen={() => setShowSettingsModal(true)}
             />
-          </div>
+          </SidebarInset>
         </div>
       </SidebarProvider>
 
