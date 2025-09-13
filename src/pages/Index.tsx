@@ -47,9 +47,9 @@ export default function Index() {
             onSettings={() => setShowSettingsModal(true)}
           />
           
-          <SidebarInset className="min-h-0 flex flex-col">
-            <header className="h-12 flex items-center border-b bg-card px-4">
-              <SidebarTrigger />
+          <SidebarInset>
+            <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
             </header>
             <ChatView
               channelId={selectedChannelId}

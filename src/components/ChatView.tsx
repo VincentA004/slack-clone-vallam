@@ -66,6 +66,17 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
           { channel_id: channelId, user_id: user.id, role: 'member' },
           { onConflict: 'channel_id,user_id' }
         );
+      
+      // Mark as read when viewing channel
+      await supabase
+        .from('channel_reads')
+        .upsert({
+          user_id: user.id,
+          channel_id: channelId,
+          last_read_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,channel_id'
+        });
     };
 
     ensureMembership();

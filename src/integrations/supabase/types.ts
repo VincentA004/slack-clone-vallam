@@ -84,6 +84,24 @@ export type Database = {
           },
         ]
       }
+      channel_reads: {
+        Row: {
+          channel_id: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          last_read_at?: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       channels: {
         Row: {
           agent_enabled: boolean

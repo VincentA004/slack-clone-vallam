@@ -51,12 +51,14 @@ export function AppSidebar({
   const [channels, setChannels] = useState<Channel[]>([]);
   const [dms, setDMs] = useState<Channel[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!user) return;
 
     loadChannels();
     loadProfiles();
+    loadUnreadCounts();
 
     // Subscribe to channels updates
     const channelsSubscription = supabase
@@ -71,12 +73,23 @@ export function AppSidebar({
         schema: 'public', 
         table: 'channel_members' 
       }, loadChannels)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages' 
+      }, loadUnreadCounts)
       .subscribe();
 
     return () => {
       supabase.removeChannel(channelsSubscription);
     };
   }, [user]);
+
+  useEffect(() => {
+    if (selectedChannelId && user) {
+      markChannelAsRead(selectedChannelId);
+    }
+  }, [selectedChannelId, user]);
 
   const loadChannels = async () => {
     if (!user) return;
@@ -104,6 +117,65 @@ export function AppSidebar({
       }, {} as Record<string, Profile>);
       setProfiles(profilesMap);
     }
+  };
+
+  const loadUnreadCounts = async () => {
+    if (!user) return;
+
+    const { data: reads } = await supabase
+      .from('channel_reads')
+      .select('channel_id, last_read_at')
+      .eq('user_id', user.id);
+
+    const { data: latestMessages } = await supabase
+      .from('messages')
+      .select('channel_id, created_at')
+      .order('created_at', { ascending: false });
+
+    const unreadMap: Record<string, number> = {};
+    
+    if (latestMessages && reads) {
+      const readMap = new Map(reads.map(r => [r.channel_id, r.last_read_at]));
+      
+      [...channels, ...dms].forEach(channel => {
+        const lastRead = readMap.get(channel.id);
+        if (!lastRead) {
+          // Count all messages if never read
+          const count = latestMessages.filter(m => m.channel_id === channel.id).length;
+          if (count > 0) unreadMap[channel.id] = count;
+        } else {
+          // Count messages after last read
+          const count = latestMessages.filter(m => 
+            m.channel_id === channel.id && 
+            new Date(m.created_at) > new Date(lastRead)
+          ).length;
+          if (count > 0) unreadMap[channel.id] = count;
+        }
+      });
+    }
+
+    setUnreadCounts(unreadMap);
+  };
+
+  const markChannelAsRead = async (channelId: string) => {
+    if (!user) return;
+
+    await supabase
+      .from('channel_reads')
+      .upsert({
+        user_id: user.id,
+        channel_id: channelId,
+        last_read_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,channel_id'
+      });
+
+    // Remove from unread counts
+    setUnreadCounts(prev => {
+      const next = { ...prev };
+      delete next[channelId];
+      return next;
+    });
   };
 
   const getDMDisplayName = (dm: Channel) => {
@@ -158,10 +230,13 @@ export function AppSidebar({
                   <SidebarMenuButton
                     onClick={() => onChannelSelect(channel.id)}
                     isActive={selectedChannelId === channel.id}
-                    className="w-full justify-start"
+                    className="w-full justify-start relative"
                   >
                     <Hash className="w-4 h-4" />
                     {!collapsed && <span>{channel.name}</span>}
+                    {unreadCounts[channel.id] && (
+                      <div className="w-2 h-2 bg-red-500 rounded-full absolute -top-1 -right-1" />
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -194,10 +269,13 @@ export function AppSidebar({
                   <SidebarMenuButton
                     onClick={() => onChannelSelect(dm.id)}
                     isActive={selectedChannelId === dm.id}
-                    className="w-full justify-start"
+                    className="w-full justify-start relative"
                   >
                     <Users className="w-4 h-4" />
                     {!collapsed && <span>{getDMDisplayName(dm)}</span>}
+                    {unreadCounts[dm.id] && (
+                      <div className="w-2 h-2 bg-red-500 rounded-full absolute -top-1 -right-1" />
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
