@@ -8,6 +8,7 @@ import { Send, X, Hash, ListTodo, HelpCircle } from 'lucide-react';
 interface MessageComposerProps {
   onSendMessage: (message: string) => void;
   onSlashCommand: (command: string, args: any) => void;
+  onHelpCommand: () => void;
   replyToMessage?: string | null;
   onCancelReply?: () => void;
   isAdmin?: boolean;
@@ -16,6 +17,7 @@ interface MessageComposerProps {
 export function MessageComposer({
   onSendMessage,
   onSlashCommand,
+  onHelpCommand,
   replyToMessage,
   onCancelReply,
   isAdmin = false
@@ -113,6 +115,12 @@ export function MessageComposer({
     if (message.startsWith('/')) {
       const parts = message.slice(1).split(' ');
       const command = parts[0];
+      
+      if (command === 'help') {
+        onHelpCommand();
+        setMessage('');
+        return;
+      }
       
       if (command === 'summary' || command === 'tasks') {
         const lastArg = parts.find(p => p.startsWith('last='));

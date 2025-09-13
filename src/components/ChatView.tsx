@@ -234,6 +234,37 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
     setReplyToMessage(null);
   };
 
+  const handleHelpCommand = async () => {
+    if (!channelId || !user) return;
+
+    const helpText = `**Commands**
+/summary [last=50] — Context, Decisions, Open Qs, Owners
+/tasks [last=50] — Checklist: @owner | task | Due: optional
+
+**Tips**
+• Works in this ${channel?.is_dm ? 'DM' : 'channel'} only
+• Results are drafts—Accept to post
+• Args: last = how many recent messages to scan (try 20/50/100)
+• Results arrive as Proposal Cards with Accept / Edit / Reject`;
+
+    // Send help message
+    const { error } = await supabase
+      .from('messages')
+      .insert({
+        channel_id: channelId,
+        user_id: user.id,
+        text: helpText,
+      });
+
+    if (error) {
+      toast({
+        title: "Failed to send help message",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSlashCommand = async (command: string, args: any) => {
     if (!channelId || !user || !channel) return;
 
@@ -512,6 +543,7 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
       <MessageComposer
         onSendMessage={handleSendMessage}
         onSlashCommand={handleSlashCommand}
+        onHelpCommand={handleHelpCommand}
         replyToMessage={replyToMessage}
         onCancelReply={() => setReplyToMessage(null)}
         isAdmin={isAdmin}
