@@ -14,7 +14,199 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_tasks: {
+        Row: {
+          args_json: Json | null
+          channel_id: string
+          command: string
+          created_at: string
+          id: string
+          result_json: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          args_json?: Json | null
+          channel_id: string
+          command: string
+          created_at?: string
+          id?: string
+          result_json?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          args_json?: Json | null
+          channel_id?: string
+          command?: string
+          created_at?: string
+          id?: string
+          result_json?: Json | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_tasks_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      channel_members: {
+        Row: {
+          channel_id: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "channel_members_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      channels: {
+        Row: {
+          agent_enabled: boolean
+          agent_max_posts_per_hour: number
+          created_at: string
+          dm_user_a: string | null
+          dm_user_b: string | null
+          id: string
+          is_dm: boolean
+          is_private: boolean
+          name: string | null
+        }
+        Insert: {
+          agent_enabled?: boolean
+          agent_max_posts_per_hour?: number
+          created_at?: string
+          dm_user_a?: string | null
+          dm_user_b?: string | null
+          id?: string
+          is_dm?: boolean
+          is_private?: boolean
+          name?: string | null
+        }
+        Update: {
+          agent_enabled?: boolean
+          agent_max_posts_per_hour?: number
+          created_at?: string
+          dm_user_a?: string | null
+          dm_user_b?: string | null
+          id?: string
+          is_dm?: boolean
+          is_private?: boolean
+          name?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          channel_id: string
+          created_at: string
+          id: string
+          parent_message_id: string | null
+          text: string
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          id?: string
+          parent_message_id?: string | null
+          text: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          id?: string
+          parent_message_id?: string | null
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          agent_auto_enabled: boolean
+          agent_auto_expires_at: string | null
+          agent_auto_scope: string
+          user_id: string
+        }
+        Insert: {
+          agent_auto_enabled?: boolean
+          agent_auto_expires_at?: string | null
+          agent_auto_scope?: string
+          user_id: string
+        }
+        Update: {
+          agent_auto_enabled?: boolean
+          agent_auto_expires_at?: string | null
+          agent_auto_scope?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
