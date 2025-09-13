@@ -468,14 +468,12 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
       </div>
 
       {/* Composer */}
-      <div className="p-4 border-t border-border bg-card">
-        <MessageComposer
-          onSendMessage={handleSendMessage}
-          onSlashCommand={handleSlashCommand}
-          replyToMessage={replyToMessage}
-          onCancelReply={() => setReplyToMessage(null)}
-        />
-      </div>
+      <MessageComposer
+        onSendMessage={handleSendMessage}
+        onSlashCommand={handleSlashCommand}
+        replyToMessage={replyToMessage}
+        onCancelReply={() => setReplyToMessage(null)}
+      />
     </div>
   );
 }

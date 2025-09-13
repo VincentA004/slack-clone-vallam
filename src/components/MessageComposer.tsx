@@ -53,56 +53,59 @@ export function MessageComposer({
       textareaRef.current.style.height = 'auto';
       const scrollHeight = textareaRef.current.scrollHeight;
       const maxHeight = 96; // max-h-24 = 96px
-      textareaRef.current.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
+      const minHeight = 48; // min height
+      textareaRef.current.style.height = `${Math.max(minHeight, Math.min(scrollHeight, maxHeight))}px`;
     }
   };
 
   return (
-    <div className="composer-card space-y-3">
-      {replyToMessage && (
-        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-          <span className="text-sm text-muted-foreground">Replying to message</span>
+    <div className="w-full bg-card border-t border-border p-4">
+      <div className="composer-card space-y-3">
+        {replyToMessage && (
+          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+            <span className="text-sm text-muted-foreground">Replying to message</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-5 h-5"
+              onClick={onCancelReply}
+            >
+              <X className="w-3 h-3" />
+            </Button>
+          </div>
+        )}
+        
+        <div className="flex items-end gap-3">
+          <div className="flex-1 relative">
+            <Textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                adjustTextareaHeight();
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message... (use / for commands)"
+              className="min-h-[48px] max-h-24 resize-none bg-input border border-border focus-visible:ring-2 focus-visible:ring-ring rounded-md p-3"
+              style={{ height: '48px' }}
+            />
+            
+            {message.startsWith('/') && (
+              <div className="absolute left-3 top-1 text-xs text-muted-foreground bg-card px-1 rounded">
+                Slash command
+              </div>
+            )}
+          </div>
+          
           <Button
-            variant="ghost"
+            onClick={handleSend}
+            disabled={!message.trim()}
             size="icon"
-            className="w-5 h-5"
-            onClick={onCancelReply}
+            className="shrink-0 h-12 w-12"
           >
-            <X className="w-3 h-3" />
+            <Send className="w-4 h-4" />
           </Button>
         </div>
-      )}
-      
-      <div className="flex items-end gap-2">
-        <div className="flex-1 relative">
-          <Textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-              adjustTextareaHeight();
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message... (use / for commands)"
-            className="min-h-[56px] max-h-24 resize-none border-0 bg-transparent focus-visible:ring-0 p-3"
-            style={{ height: '56px' }}
-          />
-          
-          {message.startsWith('/') && (
-            <div className="absolute left-3 top-1 text-xs text-muted-foreground bg-background px-1 rounded">
-              Slash command
-            </div>
-          )}
-        </div>
-        
-        <Button
-          onClick={handleSend}
-          disabled={!message.trim()}
-          size="icon"
-          className="shrink-0"
-        >
-          <Send className="w-4 h-4" />
-        </Button>
       </div>
     </div>
   );
