@@ -185,7 +185,7 @@
   }
   
   .message-bubble .prose blockquote {
-    @apply border-l-2 border-current/30 pl-3 italic text-inherit;
+    @apply border-l-2 border-gray-400/30 pl-3 italic text-inherit;
   }
   
   .message-bubble .prose strong {

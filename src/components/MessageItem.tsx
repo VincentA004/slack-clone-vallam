@@ -96,7 +96,7 @@ export function MessageItem({
           ) : (
             <>
               <div className={isOwn ? "message-bubble mine ml-auto" : "message-bubble theirs"}>
-                <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                <div className="prose prose-sm max-w-none dark:prose-invert">
                   <ReactMarkdown>{message.text}</ReactMarkdown>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export function MessageItem({
                     {format(new Date(reply.created_at), 'h:mm a')}
                   </span>
                 </div>
-                <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                <div className="prose prose-sm max-w-none dark:prose-invert">
                   <ReactMarkdown>{reply.text}</ReactMarkdown>
                 </div>
               </div>
