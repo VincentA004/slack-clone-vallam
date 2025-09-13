@@ -130,25 +130,36 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
   const loadMessages = async () => {
     if (!channelId) return;
 
-    const { data } = await supabase
+    // First fetch messages without joins to avoid FK dependency
+    const { data: msgs, error: msgErr } = await supabase
       .from('messages')
-      .select(`
-        id,
-        text,
-        user_id,
-        parent_message_id,
-        created_at,
-        profiles!messages_user_id_fkey (
-          display_name,
-          avatar_url
-        )
-      `)
+      .select('id, text, user_id, parent_message_id, created_at')
       .eq('channel_id', channelId)
       .order('created_at', { ascending: true });
 
-    if (data) {
-      setMessages(data as any);
+    if (msgErr) {
+      return;
     }
+
+    if (!msgs || msgs.length === 0) {
+      setMessages([]);
+      return;
+    }
+
+    const userIds = Array.from(new Set(msgs.map(m => m.user_id)));
+    const { data: profs } = await supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url')
+      .in('id', userIds);
+
+    const profileMap = new Map((profs || []).map(p => [p.id as string, { display_name: p.display_name, avatar_url: p.avatar_url }]));
+
+    const withProfiles = (msgs || []).map((m: any) => ({
+      ...m,
+      profiles: profileMap.get(m.user_id) ?? null,
+    }));
+
+    setMessages(withProfiles as any);
   };
 
   const loadAgentTasks = async () => {
@@ -172,6 +183,14 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
 
   const handleSendMessage = async (text: string) => {
     if (!channelId || !user || !text.trim()) return;
+
+    // Ensure membership to satisfy RLS before inserting a message
+    await supabase
+      .from('channel_members')
+      .upsert(
+        { channel_id: channelId, user_id: user.id, role: 'member' },
+        { onConflict: 'channel_id,user_id' }
+      );
 
     const { error } = await supabase
       .from('messages')
@@ -342,7 +361,7 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-background">
+    <div className="flex-1 min-h-0 flex flex-col bg-background">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-card">
         <h1 className="text-lg font-semibold">{getChannelDisplayName()}</h1>

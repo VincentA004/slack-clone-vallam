@@ -47,7 +47,7 @@ export default function Index() {
             onSettings={() => setShowSettingsModal(true)}
           />
           
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-h-0">
             <header className="h-12 flex items-center border-b bg-card px-4">
               <SidebarTrigger />
             </header>
