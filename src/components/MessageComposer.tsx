@@ -1,7 +1,9 @@
 import { useState, useRef, KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, X } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandList, CommandItem, CommandGroup } from '@/components/ui/command';
+import { Send, X, Hash, ListTodo, HelpCircle } from 'lucide-react';
 
 interface MessageComposerProps {
   onSendMessage: (message: string) => void;
@@ -19,13 +21,89 @@ export function MessageComposer({
   isAdmin = false
 }: MessageComposerProps) {
   const [message, setMessage] = useState('');
+  const [showSlashMenu, setShowSlashMenu] = useState(false);
+  const [selectedCommandIndex, setSelectedCommandIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const commands = [
+    {
+      id: 'summary',
+      label: '/summary',
+      description: 'Summarize recent messages',
+      icon: Hash,
+      template: '/summary last=50'
+    },
+    {
+      id: 'tasks',
+      label: '/tasks', 
+      description: 'Extract tasks from messages',
+      icon: ListTodo,
+      template: '/tasks last=50'
+    },
+    {
+      id: 'help',
+      label: '/help',
+      description: 'Show available commands',
+      icon: HelpCircle,
+      template: '/help'
+    }
+  ];
+
+  const shouldShowSlashMenu = (text: string) => {
+    const trimmed = text.trimStart();
+    return trimmed === '/' || (trimmed.startsWith('/') && !trimmed.includes(' '));
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (showSlashMenu) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedCommandIndex((prev) => (prev + 1) % commands.length);
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedCommandIndex((prev) => (prev - 1 + commands.length) % commands.length);
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        insertCommand(commands[selectedCommandIndex]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setShowSlashMenu(false);
+        setSelectedCommandIndex(0);
+        return;
+      }
+    }
+    
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const insertCommand = (command: typeof commands[0]) => {
+    setMessage(command.template);
+    setShowSlashMenu(false);
+    setSelectedCommandIndex(0);
+    textareaRef.current?.focus();
+  };
+
+  const handleMessageChange = (newMessage: string) => {
+    setMessage(newMessage);
+    
+    const shouldShow = shouldShowSlashMenu(newMessage);
+    if (shouldShow !== showSlashMenu) {
+      setShowSlashMenu(shouldShow);
+      if (shouldShow) {
+        setSelectedCommandIndex(0);
+      }
+    }
+    
+    adjustTextareaHeight();
   };
 
   const handleSend = () => {
@@ -79,20 +157,53 @@ export function MessageComposer({
         
         <div className="flex items-end gap-3">
           <div className="flex-1 relative">
-            <Textarea
-              ref={textareaRef}
-              value={message}
-              onChange={(e) => {
-                setMessage(e.target.value);
-                adjustTextareaHeight();
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder={isAdmin ? "Type a message... (use / for commands - Admin commands available)" : "Type a message... (use / for commands)"}
-              className="min-h-[48px] max-h-24 resize-none bg-input border border-border focus-visible:ring-2 focus-visible:ring-ring rounded-md p-3"
-              style={{ height: '48px' }}
-            />
+            <Popover open={showSlashMenu} onOpenChange={setShowSlashMenu}>
+              <PopoverTrigger asChild>
+                <Textarea
+                  ref={textareaRef}
+                  value={message}
+                  onChange={(e) => handleMessageChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={isAdmin ? "Type a message... (use / for commands - Admin commands available)" : "Type a message... (use / for commands)"}
+                  className="min-h-[48px] max-h-24 resize-none bg-input border border-border focus-visible:ring-2 focus-visible:ring-ring rounded-md p-3"
+                  style={{ height: '48px' }}
+                />
+              </PopoverTrigger>
+              
+              <PopoverContent 
+                side="top" 
+                align="start" 
+                className="w-80 p-0 bg-popover border border-border shadow-lg z-[100]"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <Command>
+                  <CommandList>
+                    <CommandGroup heading="Commands">
+                      {commands.map((command, index) => {
+                        const IconComponent = command.icon;
+                        return (
+                          <CommandItem
+                            key={command.id}
+                            onSelect={() => insertCommand(command)}
+                            className={`flex items-center gap-3 p-3 cursor-pointer ${
+                              index === selectedCommandIndex ? 'bg-accent' : ''
+                            }`}
+                          >
+                            <IconComponent className="w-4 h-4 text-muted-foreground" />
+                            <div className="flex-1">
+                              <div className="font-medium">{command.label}</div>
+                              <div className="text-sm text-muted-foreground">{command.description}</div>
+                            </div>
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             
-            {message.startsWith('/') && (
+            {message.startsWith('/') && !showSlashMenu && (
               <div className="absolute left-3 top-1 text-xs text-muted-foreground bg-card px-1 rounded">
                 Slash command
               </div>
