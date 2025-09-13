@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Reply, Edit, Trash2, Check, X } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -95,7 +96,9 @@ export function MessageItem({
           ) : (
             <>
               <div className={isOwn ? "message-bubble mine ml-auto" : "message-bubble theirs"}>
-                <div className="text-sm whitespace-pre-wrap">{message.text}</div>
+                <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                  <ReactMarkdown>{message.text}</ReactMarkdown>
+                </div>
               </div>
               {/* Message actions */}
               <div className={isOwn ? "flex items-center gap-1 opacity-0 group-hover:opacity-100 justify-end" : "flex items-center gap-1 opacity-0 group-hover:opacity-100"}>
@@ -159,7 +162,9 @@ export function MessageItem({
                     {format(new Date(reply.created_at), 'h:mm a')}
                   </span>
                 </div>
-                <div className="text-sm">{reply.text}</div>
+                <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                  <ReactMarkdown>{reply.text}</ReactMarkdown>
+                </div>
               </div>
             </div>
           ))}
