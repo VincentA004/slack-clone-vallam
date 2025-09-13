@@ -3,6 +3,7 @@ import { Hash, MessageCircle, Plus, Settings, LogOut, Users } from 'lucide-react
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { AdminBadge } from '@/components/AdminBadge';
 import {
   Sidebar,
   SidebarContent,
@@ -45,7 +46,7 @@ export function AppSidebar({
   onNewDM,
   onSettings
 }: AppSidebarProps) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin, userRole } = useAuth();
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -203,7 +204,10 @@ export function AppSidebar({
             <div className="p-2 bg-primary/10 rounded-lg">
               <MessageCircle className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="font-semibold text-lg">SlackLite</h1>
+            <div className="flex-1">
+              <h1 className="font-semibold text-lg">SlackLite</h1>
+              <AdminBadge isAdmin={isAdmin} userRole={userRole} className="mt-1" />
+            </div>
           </div>
         )}
       </SidebarHeader>

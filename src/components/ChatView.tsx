@@ -47,7 +47,7 @@ interface ChatViewProps {
 }
 
 export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [channel, setChannel] = useState<Channel | null>(null);
@@ -514,6 +514,7 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
         onSlashCommand={handleSlashCommand}
         replyToMessage={replyToMessage}
         onCancelReply={() => setReplyToMessage(null)}
+        isAdmin={isAdmin}
       />
     </div>
   );

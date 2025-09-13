@@ -8,13 +8,15 @@ interface MessageComposerProps {
   onSlashCommand: (command: string, args: any) => void;
   replyToMessage?: string | null;
   onCancelReply?: () => void;
+  isAdmin?: boolean;
 }
 
 export function MessageComposer({
   onSendMessage,
   onSlashCommand,
   replyToMessage,
-  onCancelReply
+  onCancelReply,
+  isAdmin = false
 }: MessageComposerProps) {
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -85,7 +87,7 @@ export function MessageComposer({
                 adjustTextareaHeight();
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Type a message... (use / for commands)"
+              placeholder={isAdmin ? "Type a message... (use / for commands - Admin commands available)" : "Type a message... (use / for commands)"}
               className="min-h-[48px] max-h-24 resize-none bg-input border border-border focus-visible:ring-2 focus-visible:ring-ring rounded-md p-3"
               style={{ height: '48px' }}
             />

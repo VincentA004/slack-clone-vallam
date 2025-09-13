@@ -30,13 +30,13 @@ interface ChannelSettingsModalProps {
 }
 
 export function ChannelSettingsModal({ open, onOpenChange, channelId }: ChannelSettingsModalProps) {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const [channel, setChannel] = useState<Channel | null>(null);
   const [agentEnabled, setAgentEnabled] = useState(false);
   const [maxPostsPerHour, setMaxPostsPerHour] = useState(3);
   const [isLoading, setIsLoading] = useState(false);
-  const [userRole, setUserRole] = useState<string>('');
+  const [channelUserRole, setChannelUserRole] = useState<string>('');
 
   useEffect(() => {
     if (open && channelId) {
@@ -69,7 +69,7 @@ export function ChannelSettingsModal({ open, onOpenChange, channelId }: ChannelS
       .single();
 
     if (memberData) {
-      setUserRole(memberData.role);
+      setChannelUserRole(memberData.role);
     }
   };
 
@@ -106,7 +106,7 @@ export function ChannelSettingsModal({ open, onOpenChange, channelId }: ChannelS
     }
   };
 
-  const canEditSettings = userRole === 'owner' || userRole === 'admin';
+  const canEditSettings = isAdmin || channelUserRole === 'owner' || channelUserRole === 'admin';
 
   if (!channel) {
     return null;
