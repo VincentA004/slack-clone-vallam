@@ -72,17 +72,18 @@ serve(async (req) => {
       (profs || []).map((p: any) => [p.id, p.display_name || 'Unknown'])
     );
 
-    if (!messages || messages.length < 2) {
+    if (!messages || messages.length === 0) {
+      const scope = channel?.is_dm ? 'dm' : 'channel';
       await supabase
         .from('agent_tasks')
         .update({ 
-          status: 'failed',
-          result_json: { error: 'Not enough recent messages—need at least 2 messages.' }
+          status: 'completed',
+          result_json: { markdown: 'No recent messages to summarize.', citations: [], scope }
         })
         .eq('id', taskId);
       
-      return new Response(JSON.stringify({ error: 'Not enough messages' }), {
-        status: 400,
+      return new Response(JSON.stringify({ status: 'completed' }), {
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
