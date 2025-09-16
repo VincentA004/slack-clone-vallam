@@ -196,18 +196,25 @@ ${messages}`;
     } else if (command === 'tasks') {
       const ownerList = isDM ? "Only the two DM participants" : memberNames.join(', ');
       
-      systemPrompt = `You are 'Sidekick', a careful assistant. Use **only** the provided room messages as evidence. Output **valid JSON** matching the schema.
+      systemPrompt = `You are 'Sidekick', a careful assistant. Use **only** the provided room messages as evidence. Output **valid JSON** matching the schema. If evidence is weak, say so.
 
 Schema: {"markdown": "string", "citations": [{"messageId": "string"}]}
 
-Extract actionable tasks in this exact format:
-- [ ] @owner | task text | Due: optional
+Extract actionable tasks from the conversation. Format each task as:
+- [ ] **@owner** | task description | Due: date (if mentioned)
+
+Create sections:
+1. **Immediate Tasks** — urgent or time-sensitive items
+2. **Upcoming Tasks** — planned work with deadlines  
+3. **Ongoing Tasks** — continuous or recurring work
+4. **Questions & Blockers** — items needing clarification
 
 Rules:
-- Owners must be: ${ownerList}
-- Prefer fewer, clearer tasks
-- Skip vague/duplicate items
-- If none found: "No actionable items found."`;
+- Maximum 15 total tasks across sections
+- Owners must be from: ${ownerList}
+- Include 2-4 citations supporting key tasks
+- Use clear, actionable language
+- If no tasks found: "No actionable items identified from the conversation."`;
 
       userPrompt = `Extract tasks from these messages:
 
