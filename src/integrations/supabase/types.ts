@@ -318,7 +318,7 @@ export type Database = {
     }
     Functions: {
       ensure_user_in_default_channels: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never> | { _user_id: string }
         Returns: undefined
       }
       has_role: {

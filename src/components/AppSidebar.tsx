@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Hash, MessageCircle, Plus, Settings, LogOut, Users } from 'lucide-react';
+import { Hash, MessageCircle, Plus, Settings, LogOut, Users, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ interface AppSidebarProps {
   onNewChannel: () => void;
   onNewDM: () => void;
   onSettings: () => void;
+  onProfileSettings: () => void;
 }
 
 export function AppSidebar({
@@ -44,7 +45,8 @@ export function AppSidebar({
   onChannelSelect,
   onNewChannel,
   onNewDM,
-  onSettings
+  onSettings,
+  onProfileSettings
 }: AppSidebarProps) {
   const { user, signOut, isAdmin, userRole } = useAuth();
   const { state } = useSidebar();
@@ -295,14 +297,24 @@ export function AppSidebar({
       <SidebarFooter className="p-4">
         <div className="space-y-2">
           {!collapsed && (
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={onSettings}
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={onProfileSettings}
+              >
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={onSettings}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </Button>
+            </>
           )}
           <Button
             variant="ghost"
