@@ -56,16 +56,21 @@ serve(async (req) => {
     
     const { data: messages } = await supabase
       .from('messages')
-      .select(`
-        id,
-        text,
-        created_at,
-        user_id,
-        profiles:user_id (display_name)
-      `)
+      .select('id, text, created_at, user_id')
       .eq('channel_id', task.channel_id)
       .order('created_at', { ascending: false })
       .limit(clampedCount);
+
+    // Load display names separately (avoid FK join dependency)
+    const userIds = Array.from(new Set((messages || []).map(m => m.user_id)));
+    const { data: profs } = await supabase
+      .from('profiles')
+      .select('id, display_name')
+      .in('id', userIds);
+
+    const profileMap = new Map(
+      (profs || []).map((p: any) => [p.id, p.display_name || 'Unknown'])
+    );
 
     if (!messages || messages.length < 2) {
       await supabase
@@ -85,20 +90,20 @@ serve(async (req) => {
     // Get channel members for owner validation
     const { data: members } = await supabase
       .from('channel_members')
-      .select(`
-        user_id,
-        profiles:user_id (display_name)
-      `)
+      .select('user_id')
       .eq('channel_id', task.channel_id);
 
-    const memberDisplayNames = members?.map(m => m.profiles?.display_name).filter(Boolean) || [];
+    const memberDisplayNames =
+      (members || [])
+        .map((m: any) => profileMap.get(m.user_id) || 'Member')
+        .filter(Boolean);
 
     // Format messages for AI
     const formattedMessages = messages
       .reverse()
       .map(m => {
         const timestamp = new Date(m.created_at).toISOString().slice(0, 16).replace('T', ' ');
-        const displayName = m.profiles?.display_name || 'Unknown';
+        const displayName = profileMap.get(m.user_id) || 'Unknown';
         return `[${timestamp} | @${displayName} | ${m.id}] ${m.text}`;
       })
       .join('\n');
