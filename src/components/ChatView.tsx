@@ -193,7 +193,7 @@ export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: Cha
       .from('agent_tasks')
       .select('*')
       .eq('channel_id', channelId)
-      .in('status', ['queued', 'running', 'completed', 'failed', 'accepted'])
+      .in('status', ['queued', 'running', 'completed', 'failed'])
       .order('created_at', { ascending: false });
 
     if (data) {
