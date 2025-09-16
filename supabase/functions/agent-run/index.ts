@@ -54,7 +54,8 @@ serve(async (req) => {
       .single();
 
     const rateType = channel?.is_dm ? 'on_demand_dm' : 'on_demand_channel';
-    const rateLimit = channel?.is_dm ? { limit: 2, windowMinutes: 10 } : { limit: 3, windowMinutes: 60 };
+    // Relaxed limits for testing: more generous and shorter window
+    const rateLimit = channel?.is_dm ? { limit: 8, windowMinutes: 1 } : { limit: 10, windowMinutes: 5 };
 
     // Check current rate limit
     const windowStart = new Date(Date.now() - rateLimit.windowMinutes * 60000);

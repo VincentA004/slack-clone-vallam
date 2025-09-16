@@ -282,10 +282,14 @@ export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: Cha
       });
 
       if (error) {
+        const status = (error as any).status;
+        const desc = status === 429
+          ? 'Agent cooldown reached. Please try again in a minute.'
+          : ((error as any).message || 'An unexpected error occurred');
         toast({
-          title: "Failed to run agent command",
-          description: error.message,
-          variant: "destructive",
+          title: 'Agent Error',
+          description: desc,
+          variant: 'destructive',
         });
         return;
       }
