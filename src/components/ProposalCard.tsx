@@ -93,11 +93,11 @@ export function ProposalCard({ task, onAccept, onReject }: ProposalCardProps) {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
-              {task.command === 'summary' ? 'Summary' : 'Tasks'}
+              {task.command === 'summary' ? 'Summary' : task.command === 'tasks' ? 'Tasks' : task.command}
               <CheckCircle className="w-5 h-5 text-success" />
             </CardTitle>
             <Badge variant="secondary" className="text-xs">
-              Used: this channel
+              Used: this {task.result_json?.scope === 'dm' ? 'DM' : 'channel'}
             </Badge>
           </div>
         </CardHeader>
@@ -147,13 +147,16 @@ export function ProposalCard({ task, onAccept, onReject }: ProposalCardProps) {
                         className="cursor-pointer hover:bg-muted"
                         onClick={() => {
                           // Scroll to cited message if possible
-                          const element = document.getElementById(`message-${citation.messageId}`);
+                          const element = document.querySelector(`[data-message-id="${citation.messageId}"]`);
                           if (element) {
-                            element.scrollIntoView({ behavior: 'smooth' });
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // Highlight the message briefly
+                            element.classList.add('bg-primary/10');
+                            setTimeout(() => element.classList.remove('bg-primary/10'), 2000);
                           }
                         }}
                       >
-                        Message {index + 1}
+                        {citation.messageId.slice(-6)}
                       </Badge>
                     ))}
                   </div>

@@ -27,18 +27,18 @@ export function MessageComposer({
   const [selectedCommandIndex, setSelectedCommandIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const commands = [
+    const commands = [
     {
       id: 'summary',
       label: '/summary',
-      description: 'Summarize recent messages',
+      description: 'Brief of recent messages (Context/Decisions/Open Qs/Owners)',
       icon: Hash,
       template: '/summary last=50'
     },
     {
       id: 'tasks',
       label: '/tasks', 
-      description: 'Extract tasks from messages',
+      description: 'Checklist of action items with @owners',
       icon: ListTodo,
       template: '/tasks last=50'
     },

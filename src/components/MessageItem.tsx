@@ -55,7 +55,7 @@ export function MessageItem({
   const timestamp = format(new Date(message.created_at), 'h:mm a');
 
   return (
-    <div className="group space-y-2">
+    <div className="group space-y-2" data-message-id={message.id}>
       {/* Main message */}
       <div className={isOwn ? "flex items-end gap-3 p-2 rounded-lg justify-end" : "flex items-start gap-3 p-2 rounded-lg justify-start"}>
         {/* Left avatar for others, right avatar for me */}

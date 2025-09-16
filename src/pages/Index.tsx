@@ -6,6 +6,9 @@ import { ChatView } from '@/components/ChatView';
 import { NewChannelModal } from '@/components/NewChannelModal';
 import { NewDMModal } from '@/components/NewDMModal';
 import { ChannelSettingsModal } from '@/components/ChannelSettingsModal';
+import { useMessageMonitoring } from '@/hooks/useMessageMonitoring';
+import { AgentModeSettings } from '@/components/AgentModeSettings';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Index() {
@@ -14,6 +17,10 @@ export default function Index() {
   const [showNewChannelModal, setShowNewChannelModal] = useState(false);
   const [showNewDMModal, setShowNewDMModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showAgentSettings, setShowAgentSettings] = useState(false);
+
+  // Initialize message monitoring for Agent Mode
+  useMessageMonitoring();
 
   if (loading) {
     return (
@@ -53,7 +60,14 @@ export default function Index() {
             </header>
             <ChatView
               channelId={selectedChannelId}
-              onSettingsOpen={() => setShowSettingsModal(true)}
+              onSettingsOpen={() => {
+                if (selectedChannelId) {
+                  setShowSettingsModal(true);
+                } else {
+                  setShowAgentSettings(true);
+                }
+              }}
+              onAgentSettingsOpen={() => setShowAgentSettings(true)}
             />
           </SidebarInset>
         </div>
@@ -76,6 +90,12 @@ export default function Index() {
         onOpenChange={setShowSettingsModal}
         channelId={selectedChannelId}
       />
+
+      <Dialog open={showAgentSettings} onOpenChange={setShowAgentSettings}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <AgentModeSettings />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

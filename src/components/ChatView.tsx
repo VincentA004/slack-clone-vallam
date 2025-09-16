@@ -8,6 +8,7 @@ import { MessageComposer } from '@/components/MessageComposer';
 import { MessageItem } from '@/components/MessageItem';
 import { ProposalCard } from '@/components/ProposalCard';
 import { Search, Download, Settings } from 'lucide-react';
+import { AgentModeBanner } from '@/components/AgentModeBanner';
 import { useToast } from '@/hooks/use-toast';
 
 interface Message {
@@ -44,9 +45,10 @@ interface AgentTask {
 interface ChatViewProps {
   channelId: string | null;
   onSettingsOpen: () => void;
+  onAgentSettingsOpen?: () => void;
 }
 
-export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
+export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: ChatViewProps) {
   const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -268,60 +270,57 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
   const handleSlashCommand = async (command: string, args: any) => {
     if (!channelId || !user || !channel) return;
 
-    if (channel.is_dm) {
+    // Call the agent-run edge function instead of the old local processing
+    try {
+      const { data, error } = await supabase.functions.invoke('agent-run', {
+        body: {
+          channelId,
+          userId: user.id,
+          command,
+          args
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Failed to run agent command",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data.error) {
+        toast({
+          title: "Agent Error",
+          description: data.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // If it's a help command, it returns immediately
+      if (data.result) {
+        const helpText = data.result.markdown;
+        await supabase
+          .from('messages')
+          .insert({
+            channel_id: channelId,
+            user_id: user.id,
+            text: helpText,
+          });
+      } else {
+        toast({
+          title: "Agent task queued",
+          description: `Running ${command} command...`,
+        });
+      }
+    } catch (error) {
+      console.error('Error calling agent:', error);
       toast({
-        title: "Agent not available",
-        description: "Agent isn't available in DMs (yet).",
+        title: "Failed to run agent command",
+        description: "An unexpected error occurred",
         variant: "destructive",
-      });
-      return;
-    }
-
-    if (!channel.agent_enabled) {
-      toast({
-        title: "Agent disabled",
-        description: "Agent is off for this channel.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check rate limit
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    const recentTasks = agentTasks.filter(task => 
-      task.status === 'completed' && 
-      task.created_at > oneHourAgo
-    );
-
-    if (recentTasks.length >= channel.agent_max_posts_per_hour) {
-      toast({
-        title: "Agent cooldown",
-        description: `Agent cooldown reached (max ${channel.agent_max_posts_per_hour} posts/hour). Try later.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await supabase
-      .from('agent_tasks')
-      .insert({
-        channel_id: channelId,
-        user_id: user.id,
-        command,
-        args_json: args,
-        status: 'queued'
-      });
-
-    if (error) {
-      toast({
-        title: "Failed to create agent task",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Agent task created",
-        description: `Running ${command} command...`,
       });
     }
   };
@@ -415,6 +414,9 @@ export function ChatView({ channelId, onSettingsOpen }: ChatViewProps) {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col bg-background">
+      {/* Agent Mode Banner */}
+      <AgentModeBanner onSettingsClick={() => onAgentSettingsOpen?.()} />
+      
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-card">
         <h1 className="text-lg font-semibold">{getChannelDisplayName()}</h1>

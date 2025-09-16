@@ -1,1 +1,10 @@
 project_id = "mawwhxqednmylkgaauic"
+
+[functions.agent-run]
+verify_jwt = true
+
+[functions.agent-process]  
+verify_jwt = false
+
+[functions.agent-monitor]
+verify_jwt = false
