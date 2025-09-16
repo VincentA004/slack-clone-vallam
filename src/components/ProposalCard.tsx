@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -131,8 +132,8 @@ export function ProposalCard({ task, onAccept, onReject }: ProposalCardProps) {
           ) : (
             <>
               {/* Markdown content */}
-              <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap">{markdown}</div>
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <ReactMarkdown>{markdown}</ReactMarkdown>
               </div>
 
               {/* Citations */}
