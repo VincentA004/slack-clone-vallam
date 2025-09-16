@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_audit: {
+        Row: {
+          action: string
+          channel_id: string
+          confidence: number | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          trigger_type: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          channel_id: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          trigger_type: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          channel_id?: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          trigger_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      agent_rate_limits: {
+        Row: {
+          channel_id: string
+          expires_at: string
+          id: string
+          rate_type: string
+          request_count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          channel_id: string
+          expires_at: string
+          id?: string
+          rate_type: string
+          request_count?: number
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          channel_id?: string
+          expires_at?: string
+          id?: string
+          rate_type?: string
+          request_count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       agent_tasks: {
         Row: {
           args_json: Json | null
@@ -227,18 +290,21 @@ export type Database = {
       }
       user_settings: {
         Row: {
+          agent_auto_blocked_topics: string[] | null
           agent_auto_enabled: boolean
           agent_auto_expires_at: string | null
           agent_auto_scope: string
           user_id: string
         }
         Insert: {
+          agent_auto_blocked_topics?: string[] | null
           agent_auto_enabled?: boolean
           agent_auto_expires_at?: string | null
           agent_auto_scope?: string
           user_id: string
         }
         Update: {
+          agent_auto_blocked_topics?: string[] | null
           agent_auto_enabled?: boolean
           agent_auto_expires_at?: string | null
           agent_auto_scope?: string
