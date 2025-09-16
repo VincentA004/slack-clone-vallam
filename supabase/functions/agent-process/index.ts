@@ -67,12 +67,12 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(clampedCount);
 
-    if (!messages || messages.length < 5) {
+    if (!messages || messages.length < 2) {
       await supabase
         .from('agent_tasks')
         .update({ 
           status: 'failed',
-          result_json: { error: 'Not enough recent messages—try a larger `last`.' }
+          result_json: { error: 'Not enough recent messages—need at least 2 messages.' }
         })
         .eq('id', taskId);
       
