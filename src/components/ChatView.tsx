@@ -193,7 +193,7 @@ export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: Cha
       .from('agent_tasks')
       .select('*')
       .eq('channel_id', channelId)
-      .in('status', ['queued', 'running', 'completed', 'failed'])
+      .in('status', ['queued', 'running', 'completed', 'failed', 'accepted'])
       .order('created_at', { ascending: false });
 
     if (data) {
@@ -513,7 +513,7 @@ export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: Cha
 
         {/* Agent Tasks */}
         {agentTasks
-          .filter(task => task.status !== 'rejected')
+          .filter(task => !['rejected', 'completed'].includes(task.status))
           .map((task) => (
             <ProposalCard
               key={task.id}
@@ -529,7 +529,7 @@ export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: Cha
                 
                 await supabase
                   .from('agent_tasks')
-                  .update({ status: 'completed' })
+                  .update({ status: 'accepted' })
                   .eq('id', taskId);
               }}
               onReject={async (taskId) => {
