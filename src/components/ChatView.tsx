@@ -513,7 +513,7 @@ export function ChatView({ channelId, onSettingsOpen, onAgentSettingsOpen }: Cha
 
         {/* Agent Tasks */}
         {agentTasks
-          .filter(task => !['rejected', 'completed'].includes(task.status))
+          .filter(task => !['rejected'].includes(task.status))
           .map((task) => (
             <ProposalCard
               key={task.id}
